@@ -11,38 +11,38 @@ private var defaultUnselectedColor:UIColor = UIColor.lightGrayColor()
 private var defaultMinValue:CGFloat = 0.0
 private var defaultMaxValue:CGFloat = 1.0
 
-@IBDesignable class GVCenterSlider: UIControl {
+@IBDesignable public class GVCenterSlider: UIControl {
     
-    var actionBlock: ((slider: GVCenterSlider, value: CGFloat) -> Void)?
+    public var actionBlock: ((slider: GVCenterSlider, value: CGFloat) -> Void)?
     
     //MARK: Properties
-    @IBInspectable var selectedColor: UIColor = defaultSelectedColor {
+    @IBInspectable public var selectedColor: UIColor = defaultSelectedColor {
         didSet {
             _selectedTrackLayer.backgroundColor = self.selectedColor.CGColor
             _centerDotLayer.backgroundColor = self.selectedColor.CGColor
         }
     }
     
-    @IBInspectable var unselectedColor: UIColor = defaultUnselectedColor {
+    @IBInspectable public var unselectedColor: UIColor = defaultUnselectedColor {
         didSet {
             _unselectedTrackLayer.backgroundColor = self.unselectedColor.CGColor
         }
     }
     
-    @IBInspectable var value: CGFloat {
+    @IBInspectable public var value: CGFloat {
         get{ return _value }
         set{ self.setValue(newValue, animated:true) }
     }
     
-    func setValue(value: CGFloat, animated: Bool = true) {
+    public func setValue(value: CGFloat, animated: Bool = true) {
         _value = max(min(value, self.maximumValue), self.minimumValue)
         self.updateThumbPosition(animated: animated)
     }
     
-    @IBInspectable var minimumValue: CGFloat = defaultMinValue // default 0.0. the current value may change if outside new min value
-    @IBInspectable var maximumValue: CGFloat = defaultMaxValue // default 1.0. the current value may change if outside new max value
+    @IBInspectable public var minimumValue: CGFloat = defaultMinValue // default 0.0. the current value may change if outside new min value
+    @IBInspectable public var maximumValue: CGFloat = defaultMaxValue // default 1.0. the current value may change if outside new max value
     
-    @IBInspectable var minimumValueImage: UIImage? = nil { // default is nil. image that appears to left of control (e.g. speaker off)
+    @IBInspectable public var minimumValueImage: UIImage? = nil { // default is nil. image that appears to left of control (e.g. speaker off)
         didSet{
             if let img = self.minimumValueImage {
                 let imgLayer = _minTrackImageLayer ?? {
@@ -62,7 +62,7 @@ private var defaultMaxValue:CGFloat = 1.0
             self.layer.needsLayout()
         }
     }
-    @IBInspectable var maximumValueImage: UIImage? = nil { // default is nil. image that appears to right of control (e.g. speaker max)
+    @IBInspectable public var maximumValueImage: UIImage? = nil { // default is nil. image that appears to right of control (e.g. speaker max)
         didSet {
             if let img = self.maximumValueImage {
                 let imgLayer = _maxTrackImageLayer ?? {
@@ -83,16 +83,16 @@ private var defaultMaxValue:CGFloat = 1.0
         }
     }
     
-    var continuous: Bool = true // if set, value change events are generated any time the value changes due to dragging. default = YES
+    public var continuous: Bool = true // if set, value change events are generated any time the value changes due to dragging. default = YES
     
-    @IBInspectable var thickness: CGFloat = defaultThickness {
+    @IBInspectable public var thickness: CGFloat = defaultThickness {
         didSet{
             _unselectedTrackLayer.cornerRadius = self.thickness / 2.0
             self.layer.setNeedsLayout()
         }
     }
     
-    private var selectedBorderColor: UIColor? {
+    public var selectedBorderColor: UIColor? {
         set{
             _selectedTrackLayer.borderColor = newValue?.CGColor
         }
@@ -104,7 +104,7 @@ private var defaultMaxValue:CGFloat = 1.0
         }
     }
     
-    var selectedTrackBorderWidth: CGFloat {
+    public var selectedTrackBorderWidth: CGFloat {
         set {
             _selectedTrackLayer.borderWidth = newValue
         }
@@ -113,7 +113,7 @@ private var defaultMaxValue:CGFloat = 1.0
         }
     }
     
-    var unselectedBorderColor: UIColor? {
+    public var unselectedBorderColor: UIColor? {
         set{
             _unselectedTrackLayer.borderColor = newValue?.CGColor
         }
@@ -125,7 +125,7 @@ private var defaultMaxValue:CGFloat = 1.0
         }
     }
     
-    var unselectedBorderWidth: CGFloat {
+    public var unselectedBorderWidth: CGFloat {
         set {
             _unselectedTrackLayer.borderWidth = newValue
         }
@@ -134,7 +134,7 @@ private var defaultMaxValue:CGFloat = 1.0
         }
     }
     
-    @IBInspectable var thumbSize: CGFloat = defaultThumbSize {
+    @IBInspectable public var thumbSize: CGFloat = defaultThumbSize {
         didSet {
             _thumbLayer.cornerRadius = self.thumbSize / 2.0
             _thumbLayer.bounds = CGRectMake(0, 0, self.thumbSize, self.thumbSize)
@@ -142,7 +142,7 @@ private var defaultMaxValue:CGFloat = 1.0
         }
     }
     
-    @IBInspectable var centerDotSize: CGFloat = defaultCenterDotSize {
+    @IBInspectable public var centerDotSize: CGFloat = defaultCenterDotSize {
         didSet {
             _centerDotLayer.cornerRadius = self.centerDotSize / 2.0
             _centerDotLayer.bounds = CGRectMake(0, 0, self.centerDotSize, self.centerDotSize)
@@ -150,13 +150,13 @@ private var defaultMaxValue:CGFloat = 1.0
         }
     }
     
-    @IBInspectable var thumbIcon: UIImage? = nil {
+    @IBInspectable public var thumbIcon: UIImage? = nil {
         didSet {
             _thumbIconLayer.contents = self.thumbIcon?.CGImage
         }
     }
     
-    var thumbColor: UIColor {
+    public var thumbColor: UIColor {
         get {
             if let color = _thumbIconLayer.backgroundColor {
                 return UIColor(CGColor: color)
@@ -223,12 +223,12 @@ private var defaultMaxValue:CGFloat = 1.0
     
     //MARK: - Init
     
-    override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         self.commonSetup()
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
         self.selectedColor = aDecoder.decodeObjectForKey("selectedColor") as? UIColor ?? defaultSelectedColor
@@ -251,7 +251,7 @@ private var defaultMaxValue:CGFloat = 1.0
         self.commonSetup()
     }
     
-    override func encodeWithCoder(aCoder: NSCoder) {
+    override public func encodeWithCoder(aCoder: NSCoder) {
         super.encodeWithCoder(aCoder)
         
         aCoder.encodeObject(self.selectedColor, forKey: "selectedColor")
@@ -283,15 +283,15 @@ private var defaultMaxValue:CGFloat = 1.0
     
     //MARK: - Layout
     
-    override func intrinsicContentSize() -> CGSize {
+    override public func intrinsicContentSize() -> CGSize {
         return CGSize(width: UIViewNoIntrinsicMetric, height: self.thumbSize)
     }
     
-    override func alignmentRectInsets() -> UIEdgeInsets {
+    override public func alignmentRectInsets() -> UIEdgeInsets {
         return UIEdgeInsetsMake(4.0, 2.0, 4.0, 2.0)
     }
     
-    override func layoutSublayersOfLayer(layer: CALayer) {
+    override public func layoutSublayersOfLayer(layer: CALayer) {
 //        super.layoutSublayersOfLayer(layer)
         
         if layer != self.layer {return}
@@ -335,7 +335,7 @@ private var defaultMaxValue:CGFloat = 1.0
     
     //MARK: - Touch Tracking
     
-    override func beginTrackingWithTouch(touch: UITouch, withEvent event: UIEvent?) -> Bool {
+    override public func beginTrackingWithTouch(touch: UITouch, withEvent event: UIEvent?) -> Bool {
         let pt = touch.locationInView(self)
         
         let center = _thumbLayer.position
@@ -348,7 +348,7 @@ private var defaultMaxValue:CGFloat = 1.0
         return false
     }
     
-    override func continueTrackingWithTouch(touch: UITouch, withEvent event: UIEvent?) -> Bool {
+    override public func continueTrackingWithTouch(touch: UITouch, withEvent event: UIEvent?) -> Bool {
         let pt = touch.locationInView(self)
         let newValue = valueForLocation(pt)
         self.setValue(newValue, animated: false)
@@ -359,7 +359,7 @@ private var defaultMaxValue:CGFloat = 1.0
         return true
     }
     
-    override func endTrackingWithTouch(touch: UITouch?, withEvent event: UIEvent?) {
+    override public func endTrackingWithTouch(touch: UITouch?, withEvent event: UIEvent?) {
         if let pt = touch?.locationInView(self) {
             let newValue = valueForLocation(pt)
             self.setValue(newValue, animated: false)
