@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "GVCenterSlider"
-  s.version      = "1.0.1"
+  s.version      = "1.0.2"
   s.summary      = "Slider working from center to left or right"
 
   s.homepage     = "https://github.com/VladimirGoncharov/GVCenterSlider"
