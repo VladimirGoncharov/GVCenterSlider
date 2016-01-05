@@ -1,21 +1,32 @@
 import UIKit
 
-private var defaultThickness:CGFloat = 2.0
+private let defaultThickness:CGFloat = 2.0
 
-private var defaultThumbSize:CGFloat = 28.0
-private var defaultCenterDotSize:CGFloat = 6.0
+private let defaultThumbSize:CGFloat = 28.0
+private let defaultCenterDotSize:CGFloat = 6.0
 
-private var defaultSelectedColor:UIColor = UIColor.greenColor()
-private var defaultUnselectedColor:UIColor = UIColor.lightGrayColor()
+private let defaultSelectedColor:UIColor = UIColor.greenColor()
+private let defaultUnselectedColor:UIColor = UIColor.lightGrayColor()
 
-private var defaultMinValue:CGFloat = 0.0
-private var defaultMaxValue:CGFloat = 1.0
+private let defaultMinValue:CGFloat = 0.0
+private let defaultMaxValue:CGFloat = 1.0
+
+private let defaultContinuous:Bool = true
 
 @IBDesignable public class GVCenterSlider: UIControl {
     
+    //it works like sending a message about changing value.
     public var actionBlock: ((slider: GVCenterSlider, value: CGFloat) -> Void)?
     
-    //MARK: Properties
+    //MARK: - Functions for override
+    
+    public func valueForEndedLocation(point: CGPoint, value: CGFloat) -> CGFloat {
+        return value
+    }
+    
+    //MARK: - Properties
+    
+    //IBInspectable
     @IBInspectable public var selectedColor: UIColor = defaultSelectedColor {
         didSet {
             _selectedTrackLayer.backgroundColor = self.selectedColor.CGColor
@@ -50,11 +61,11 @@ private var defaultMaxValue:CGFloat = 1.0
                     l.anchorPoint = CGPointMake(0.0, 0.5)
                     self.layer.addSublayer(l)
                     return l
-                }()
+                    }()
                 imgLayer.contents = img.CGImage
                 imgLayer.bounds = CGRectMake(0, 0, img.size.width, img.size.height)
                 _minTrackImageLayer = imgLayer
-                    
+                
             }else{
                 _minTrackImageLayer?.removeFromSuperlayer()
                 _minTrackImageLayer = nil
@@ -70,7 +81,7 @@ private var defaultMaxValue:CGFloat = 1.0
                     l.anchorPoint = CGPointMake(1.0, 0.5)
                     self.layer.addSublayer(l)
                     return l
-                }()
+                    }()
                 imgLayer.contents = img.CGImage
                 imgLayer.bounds = CGRectMake(0, 0, img.size.width, img.size.height)
                 _maxTrackImageLayer = imgLayer
@@ -83,7 +94,8 @@ private var defaultMaxValue:CGFloat = 1.0
         }
     }
     
-    public var continuous: Bool = true // if set, value change events are generated any time the value changes due to dragging. default = YES
+    // if set, value change events are generated any time the value changes due to dragging. default = YES
+    @IBInspectable public var continuous: Bool = defaultContinuous
     
     @IBInspectable public var thickness: CGFloat = defaultThickness {
         didSet{
@@ -91,6 +103,30 @@ private var defaultMaxValue:CGFloat = 1.0
             self.layer.setNeedsLayout()
         }
     }
+    
+    @IBInspectable public var thumbSize: CGFloat = defaultThumbSize {
+        didSet {
+            _thumbLayer.cornerRadius = self.thumbSize / 2.0
+            _thumbLayer.bounds = CGRectMake(0, 0, self.thumbSize, self.thumbSize)
+            self.invalidateIntrinsicContentSize()
+        }
+    }
+    
+    @IBInspectable public var centerDotSize: CGFloat = defaultCenterDotSize {
+        didSet {
+            _centerDotLayer.cornerRadius = self.centerDotSize / 2.0
+            _centerDotLayer.bounds = CGRectMake(0, 0, self.centerDotSize, self.centerDotSize)
+            self.invalidateIntrinsicContentSize()
+        }
+    }
+    
+    @IBInspectable public var thumbIcon: UIImage? = nil {
+        didSet {
+            _thumbIconLayer.contents = self.thumbIcon?.CGImage
+        }
+    }
+    
+    //just variables
     
     public var selectedBorderColor: UIColor? {
         set{
@@ -131,28 +167,6 @@ private var defaultMaxValue:CGFloat = 1.0
         }
         get {
             return _unselectedTrackLayer.borderWidth
-        }
-    }
-    
-    @IBInspectable public var thumbSize: CGFloat = defaultThumbSize {
-        didSet {
-            _thumbLayer.cornerRadius = self.thumbSize / 2.0
-            _thumbLayer.bounds = CGRectMake(0, 0, self.thumbSize, self.thumbSize)
-            self.invalidateIntrinsicContentSize()
-        }
-    }
-    
-    @IBInspectable public var centerDotSize: CGFloat = defaultCenterDotSize {
-        didSet {
-            _centerDotLayer.cornerRadius = self.centerDotSize / 2.0
-            _centerDotLayer.bounds = CGRectMake(0, 0, self.centerDotSize, self.centerDotSize)
-            self.invalidateIntrinsicContentSize()
-        }
-    }
-    
-    @IBInspectable public var thumbIcon: UIImage? = nil {
-        didSet {
-            _thumbIconLayer.contents = self.thumbIcon?.CGImage
         }
     }
     
@@ -227,7 +241,7 @@ private var defaultMaxValue:CGFloat = 1.0
         super.init(frame: frame)
         self.commonSetup()
     }
-
+    
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
@@ -237,9 +251,11 @@ private var defaultMaxValue:CGFloat = 1.0
         self.value = aDecoder.decodeObjectForKey("value") as? CGFloat ?? defaultMinValue
         self.minimumValue = aDecoder.decodeObjectForKey("minimumValue") as? CGFloat ?? defaultMinValue
         self.maximumValue = aDecoder.decodeObjectForKey("maximumValue") as? CGFloat ?? defaultMaxValue
-
+        
         self.minimumValueImage = aDecoder.decodeObjectForKey("minimumValueImage") as? UIImage
         self.maximumValueImage = aDecoder.decodeObjectForKey("maximumValueImage") as? UIImage
+        
+        self.continuous = aDecoder.decodeBoolForKey("continuous") ?? defaultContinuous
         
         self.thickness = aDecoder.decodeObjectForKey("thickness") as? CGFloat ?? defaultThickness
         
@@ -263,6 +279,8 @@ private var defaultMaxValue:CGFloat = 1.0
         
         aCoder.encodeObject(self.minimumValueImage, forKey: "minimumValueImage")
         aCoder.encodeObject(self.maximumValueImage, forKey: "maximumValueImage")
+        
+        aCoder.encodeBool(self.continuous, forKey: "continuous")
         
         aCoder.encodeObject(self.thickness, forKey: "thickness")
         
@@ -292,7 +310,7 @@ private var defaultMaxValue:CGFloat = 1.0
     }
     
     override public func layoutSublayersOfLayer(layer: CALayer) {
-//        super.layoutSublayersOfLayer(layer)
+        //        super.layoutSublayersOfLayer(layer)
         
         if layer != self.layer {return}
         
@@ -350,25 +368,26 @@ private var defaultMaxValue:CGFloat = 1.0
     
     override public func continueTrackingWithTouch(touch: UITouch, withEvent event: UIEvent?) -> Bool {
         let pt = touch.locationInView(self)
-        let newValue = valueForLocation(pt)
+        let newValue = self.calculateValueForLocation(pt)
         self.setValue(newValue, animated: false)
         if (self.continuous) {
-            self.sendActionsForControlEvents(UIControlEvents.ValueChanged)
             self.actionBlock?(slider: self, value: newValue)
+            self.sendActionsForControlEvents(UIControlEvents.ValueChanged)
         }
         return true
     }
     
     override public func endTrackingWithTouch(touch: UITouch?, withEvent event: UIEvent?) {
         if let pt = touch?.locationInView(self) {
-            let newValue = valueForLocation(pt)
-            self.setValue(newValue, animated: false)
+            var newValue = self.calculateValueForLocation(pt)
+            newValue = self.valueForEndedLocation(pt, value: newValue)
+            self.setValue(newValue, animated: true)
         }
         self.actionBlock?(slider: self, value: _value)
         self.sendActionsForControlEvents([UIControlEvents.ValueChanged, UIControlEvents.TouchUpInside])
     }
     
-    //MARK: - Private Variables
+    //MARK: - Private Functions
     
     private func calculateCurrentThumbPosition() -> CGPoint {
         let diff = self.maximumValue - self.minimumValue
@@ -379,8 +398,6 @@ private var defaultMaxValue:CGFloat = 1.0
         let left = _unselectedTrackLayer.position.x - trackWidth / 2.0
         return CGPointMake(left + (trackWidth * perc), halfHeight)
     }
-    
-    //MARK: - Private Functions
     
     private func updateThumbPosition(animated animated: Bool) {
         let position = self.calculateCurrentThumbPosition()
@@ -397,7 +414,7 @@ private var defaultMaxValue:CGFloat = 1.0
         self.updateSelectedTrackPosition(animated: animated)
     }
     
-    private func valueForLocation(point: CGPoint) -> CGFloat {
+    private func calculateValueForLocation(point: CGPoint) -> CGFloat {
         var left = self.bounds.origin.x
         var w = self.bounds.width
         if let minImgLayer = _minTrackImageLayer {
